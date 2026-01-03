@@ -1,3 +1,4 @@
+
  <div class="content-card">
      <h3 class="text-red-900! text-3xl!">Welcome Back!</h3>
      <p>This is your main dashboard. The header stays fixed, and this area scrolls independently.</p>
