@@ -8,7 +8,7 @@
     }
 </style>
 
-<div class="!max-w-4xl !mx-auto !bg-white !p-8 !rounded-xl !shadow-lg !border !border-gray-100 !my-10">
+<div class="w-full! !mx-auto !bg-white !p-8 !rounded-xl !shadow-lg !border !border-gray-100 !my-10">
     <div class="!mb-8 !border-b !pb-4">
         <h2 class="!text-3xl !font-bold !text-gray-800">Submit Property</h2>
     </div>

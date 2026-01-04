@@ -72,8 +72,10 @@ function load_dashboard()
 /**
  * 1. Register Custom Post Type
  */
-function usa_property_post_type() {
-    register_post_type('property',
+function usa_property_post_type()
+{
+    register_post_type(
+        'property',
         array(
             'labels'      => array(
                 'name'          => __('Properties', 'textdomain'),
@@ -91,7 +93,8 @@ add_action('init', 'usa_property_post_type');
 /**
  * 2. Handle AJAX Submission
  */
-function usa_handle_property_submission() {
+function usa_handle_property_submission()
+{
     // Security Check
     if (!isset($_POST['property_nonce']) || !wp_verify_nonce($_POST['property_nonce'], 'submit_property_action')) {
         wp_send_json_error(array('message' => 'Security check failed.'));
@@ -99,12 +102,12 @@ function usa_handle_property_submission() {
 
     $title = sanitize_text_field($_POST['property_title']);
     $desc  = sanitize_textarea_field($_POST['property_description']);
-    
+
     // Create Post
     $post_data = array(
         'post_title'   => $title,
         'post_content' => $desc,
-        'post_status'  => 'pending', 
+        'post_status'  => 'pending',
         'post_type'    => 'property',
         'meta_input'   => array(
             'property_price'  => sanitize_text_field($_POST['property_price']),
@@ -112,7 +115,7 @@ function usa_handle_property_submission() {
             'property_beds'   => intval($_POST['property_beds']),
             'property_baths'  => floatval($_POST['property_baths']),
             'property_area'   => intval($_POST['property_area']),
-            'property_address'=> array(
+            'property_address' => array(
                 'street' => sanitize_text_field($_POST['address_street']),
                 'city'   => sanitize_text_field($_POST['address_city']),
                 'state'  => sanitize_text_field($_POST['address_state']),
@@ -163,4 +166,36 @@ function usa_handle_property_submission() {
 }
 add_action('wp_ajax_submit_property_listing', 'usa_handle_property_submission');
 add_action('wp_ajax_nopriv_submit_property_listing', 'usa_handle_property_submission');
-?>
+
+/**
+ * Shortcode for Agent Property Listing Form
+ */
+function agent_property_submission_shortcode()
+{
+    // Enqueue the script needed for this form
+    wp_enqueue_script('property-submission-js');
+
+    ob_start();
+    get_template_part('template-parts/dashboard/agent_property_listing_form');
+    return ob_get_clean();
+}
+add_shortcode('agent_property_submission', 'agent_property_submission_shortcode');
+
+/**
+ * Enqueue Property Submission Script
+ */
+function enqueue_property_submission_script()
+{
+    wp_register_script(
+        'property-submission-js',
+        get_stylesheet_directory_uri() . '/assets/js/property-submission.js',
+        array('jquery'),
+        filemtime(get_stylesheet_directory() . '/assets/js/property-submission.js'),
+        true
+    );
+
+    wp_localize_script('property-submission-js', 'dashboardData', array(
+        'ajax_url' => admin_url('admin-ajax.php')
+    ));
+}
+add_action('wp_enqueue_scripts', 'enqueue_property_submission_script');
